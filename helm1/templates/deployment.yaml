@@ -1,0 +1,131 @@
+---
+apiVersion: apps/v1 
+kind: Deployment 
+metadata:
+  name: fe-deploy 
+  labels: 
+    name: fe-deploy 
+    app: bc16-app 
+spec: 
+  selector: 
+    matchLabels: 
+      name: frontend-pod 
+      app: bc16-app 
+  template: 
+    metadata:
+      name: frontend-pod
+      labels:
+        name: frontend-pod
+        app: bc16-app
+    spec:
+      containers:
+      - name: postgres
+        image: rishmitha/fe_new1
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-deploy
+  labels:
+    name: job-deploy
+    app: bc16-app
+spec:
+  selector:
+    matchLabels:
+      name: job-pod
+      app: bc16-app
+  template:
+    metadata:
+      name: job-pod
+      labels:
+        name: job-pod
+        app: bc16-app
+    spec:
+      containers:
+      - name: postgres
+        image: rishmitha/jobsvc
+        ports:
+          - containerPort: 8082
+        env: 
+          - name: "SPRING_DATASOURCE_URL"
+            value: "jdbc:postgresql://db:5432/postgres"
+          - name: "SPRING_DATASOURCE_USERNAME"
+            value: "postgres"
+          - name: "SPRING_DATASOURCE_PASSWORD"
+            value: "1234" 
+          - name: "SPRING_JPA_HIBERNATE_DDL_AUTO"
+            value: "update" 
+          - name: "ORG_URL"
+            value: "http://192.168.99.100:30081/api/v1/organizations"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: org-deploy
+  labels:
+    name: org-deploy
+    app: bc16-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      name: org-pod
+      app: bc16-app
+  template:
+    metadata:
+      name: org-pod
+      labels:
+        name: org-pod
+        app: bc16-app
+    spec:
+      containers:
+      - name: postgres
+        image: rishmitha/orgsvc
+        ports:
+        - containerPort: 8081
+        env: 
+          - name: "SPRING_DATASOURCE_URL"
+            value: "jdbc:postgresql://db:5432/postgres"
+          - name: "SPRING_DATASOURCE_USERNAME"
+            value: "postgres"
+          - name: "SPRING_DATASOURCE_PASSWORD"
+            value: "1234"
+          - name: "SPRING_JPA_HIBERNATE_DDL_AUTO"
+            value: "update" 
+---
+apiVersion: apps/v1 
+kind: Deployment 
+metadata:
+  name: postgres-deploy 
+  labels: 
+    name: postgres-deploy 
+    app: bc16-app 
+spec: 
+  selector: 
+    matchLabels: 
+      name: postgres-pod 
+      app: bc16-app 
+  template: 
+    metadata: 
+      name: postgres-pod 
+      labels: 
+        name: postgres-pod 
+        app: bc16-app 
+    spec: 
+      containers: 
+      - name: postgres 
+        image: postgres 
+        ports: 
+          - containerPort: 5432 
+        env: 
+          - name: "POSTGRES_USER"
+            value: "postgres"
+          - name: "POSTGRES_PASSWORD"
+            value: "1234"
+          - name: "POSTGRES_DB"
+            value: "postgres"
+
+

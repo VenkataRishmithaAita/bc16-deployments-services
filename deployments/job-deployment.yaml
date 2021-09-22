@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-deploy
+  labels:
+    name: job-deploy
+    app: bc16-app
+spec:
+  selector:
+    matchLabels:
+      name: job-pod
+      app: bc16-app
+  template:
+    metadata:
+      name: job-pod
+      labels:
+        name: job-pod
+        app: bc16-app
+    spec:
+      containers:
+      - name: postgres
+        image: rishmitha/jobsvc
+        ports:
+          - containerPort: 8082
+        env: 
+          - name: "SPRING_DATASOURCE_URL"
+            value: "jdbc:postgresql://db:5432/postgres"
+          - name: "SPRING_DATASOURCE_USERNAME"
+            value: "postgres"
+          - name: "SPRING_DATASOURCE_PASSWORD"
+            value: "1234" 
+          - name: "SPRING_JPA_HIBERNATE_DDL_AUTO"
+            value: "update" 
+          - name: "ORG_URL"
+            value: "http://192.168.99.100:30081/api/v1/organizations"
